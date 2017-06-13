@@ -1,0 +1,136 @@
+create kafka-config
+
+k1
+
+kafka {
+  bootstrap.servers="gosec1.node.paas.labs.stratio.com:9092,gosec2.node.paas.labs.stratio.com:9092,gosec3.node.paas.labs.stratio.com:9092"
+  key.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+  value.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+  ssl.keystore.location=/home/jcgarcia/kafka-securized/kafka.keystore
+  ssl.keystore.password=g0s3c_k4fk4_k3yst0r3
+  ssl.key.password=g0s3c_k4fk4_k3yst0r3
+  ssl.truststore.location=/home/jcgarcia/kafka-securized/kafka.truststore
+  ssl.truststore.password=g0s3c_k4fk4_k3yst0r3
+  ssl.client.auth=required
+  security.protocol=SSL
+}
+
+k2
+
+kafka {
+  bootstrap.servers="localhost:9092"
+  key.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+  value.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+}
+
+k3
+
+kafka {
+  bootstrap.servers="broker-0.confluent-kafka-sec.mesos:9774,broker-1.confluent-kafka-sec.mesos:9817,broker-2.confluent-kafka-sec.mesos:9909"
+  key.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+  value.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+  ssl.keystore.location=/home/jcgarcia/kafka-securized/kafka.keystore
+  ssl.keystore.password=g0s3c_k4fk4_k3yst0r3
+  ssl.key.password=g0s3c_k4fk4_k3yst0r3
+  ssl.truststore.location=/home/jcgarcia/kafka-securized/kafka.truststore
+  ssl.truststore.password=g0s3c_k4fk4_k3yst0r3
+  ssl.client.auth=required
+  security.protocol=SSL
+}
+
+kafka {
+  bootstrap.servers="broker-0.confluent-kafka-sec.mesos:9774,broker-1.confluent-kafka-sec.mesos:9817,broker-2.confluent-kafka-sec.mesos:9909"
+  key.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+  value.serializer = "org.apache.kafka.common.serialization.StringSerializer"
+  security.inter.broker.protocol=SSL
+  security.protocol=SSL
+  ssl.keystore.location=/broker-2-confluent-kafka-sec.jks
+  ssl.keystore.password=br0k3r_2_c0nflu3nt_k4fk4_s3c
+  ssl.key.password=br0k3r_2_c0nflu3nt_k4fk4_s3c
+  ssl.truststore.location=/truststore.jks
+  ssl.truststore.password=c4_trust_d3f4ult_k3yst0r3
+}
+
+
+create twirl-template
+
+t1
+
+  @import com.stratio.khermes.helpers.faker.Faker
+  @(faker: Faker)
+  @defining(faker.TicketsCarrefour.generateTicket) { case (randomTicket) => {
+      "id": "@(randomTicket.id)",
+      "clientId": "@(randomTicket.clientId)",
+      "date": "@(randomTicket.date)",
+      "mallNumber": "@(randomTicket.mallNumber)",
+      "shaOne": "@(randomTicket.shaOne)",
+      "clubCardNumber": "@(randomTicket.clubCardNumber)",
+      "items": [@(randomTicket.items)],
+      "header": @(randomTicket.header),
+      "vatItems": [@(randomTicket.vatItems)],
+      "lines": [@(randomTicket.lines)],
+      "concepts": [@(randomTicket.concepts)],
+      "numberAuxiliaryData": "@(randomTicket.numberAuxiliaryData)",
+      "auxiliaryData": "@(randomTicket.auxiliaryData)"
+    }}
+
+
+@import com.stratio.khermes.helpers.faker.Faker
+@(faker: Faker)
+@defining(faker.Tickets.generateTicket) { case (randomTicket) =>
+    @(randomTicket)
+  }
+
+
+t2
+
+    @import scala.util.Random
+    @import com.stratio.khermes.helpers.faker.generators.Positive
+    @import com.stratio.khermes.helpers.faker.Faker
+    @(faker: Faker)
+    @defining(faker.TicketsStratio.generateTicket) { case (randomTicket) => {
+        "id": "@(randomTicket.id)",
+        "idSale": "@(randomTicket.idSale)",
+        "dateFlat": @(randomTicket.dateFlat),
+        "date": "@(randomTicket.date)",
+        "cashier": "@(randomTicket.cashier)",
+        "clientId": "@(randomTicket.clientId)",
+        "clientName": "@(randomTicket.clientName)",
+        "storeId": "@(faker.Number.number(3,Positive))",
+        "totalSale": @(randomTicket.totalSale),
+        "lines": [@(randomTicket.lines)],
+        "pays": [@(randomTicket.pays)]
+      }}
+
+
+create generator-config
+
+g2
+
+khermes {
+  templates-path = "/tmp/khermes/templates"
+  topic = "khermes"
+  template-name = "khermestemplate"
+  i18n = "ALL"
+
+  timeout-rules {
+    number-of-events: 100
+    duration: 10 seconds
+  }
+
+}
+
+g1
+
+khermes {
+  templates-path = "/tmp/khermes/templates"
+  topic = "khermes"
+  template-name = "khermestemplate"
+  i18n = "ALL"
+
+  timeout-rules {
+    number-of-events: 10
+    duration: 10 seconds
+  }
+
+}

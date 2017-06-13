@@ -143,8 +143,6 @@
             <artifactId>kantan.csv-joda-time_${scala.binary.version}</artifactId>
             <version>0.1.19</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.json4s</groupId>
             <artifactId>json4s-native_${scala.binary.version}</artifactId>
